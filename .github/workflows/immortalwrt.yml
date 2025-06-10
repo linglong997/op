@@ -115,7 +115,11 @@ jobs:
       run: |
         cd immortalwrt/bin/targets/*/*
         rm -rf packages
+        # 创建带设备名称和日期的压缩包
+        ARCHIVE_NAME="ImmortalWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}.tar.gz"
+        tar -czf "$ARCHIVE_NAME" *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "FIRMWARE_ARCHIVE=$PWD/$ARCHIVE_NAME" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware directory
@@ -135,14 +139,14 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@master
+      uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        files: ${{ env.FIRMWARE_ARCHIVE }}
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
