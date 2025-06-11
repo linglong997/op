@@ -117,7 +117,6 @@ jobs:
         rm -rf packages
         # 删除除 .gz 文件以外的所有文件
         find . -type f ! -name "*.gz" -exec rm -f {} \;
-	# 不压缩，直接保存文件路径
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
